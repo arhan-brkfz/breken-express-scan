@@ -5,8 +5,8 @@
  */
 
 var express = require('../../..');
-var fs = require('node:fs');
-var path = require('node:path');
+var fs = require('fs');
+var path = require('path');
 
 module.exports = function(parent, options){
   var dir = path.join(__dirname, '..', 'controllers');

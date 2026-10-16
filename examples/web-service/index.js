@@ -72,12 +72,12 @@ var userRepos = {
 // and simply expose the data
 
 // example: http://localhost:3000/api/users/?api-key=foo
-app.get('/api/users', function (req, res) {
+app.get('/api/users', function(req, res, next){
   res.send(users);
 });
 
 // example: http://localhost:3000/api/repos/?api-key=foo
-app.get('/api/repos', function (req, res) {
+app.get('/api/repos', function(req, res, next){
   res.send(repos);
 });
 

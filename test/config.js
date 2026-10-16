@@ -1,6 +1,6 @@
 'use strict'
 
-var assert = require('node:assert');
+var assert = require('assert');
 var express = require('..');
 
 describe('config', function () {

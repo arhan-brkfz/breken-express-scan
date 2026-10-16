@@ -1,10 +1,10 @@
 'use strict'
 
 var after = require('after');
-var assert = require('node:assert')
+var assert = require('assert')
 var express = require('../')
   , Route = express.Route
-  , methods = require('../lib/utils').methods
+  , methods = require('methods')
 
 describe('Route', function(){
   it('should work without handlers', function(done) {
@@ -124,7 +124,7 @@ describe('Route', function(){
       var req = { method: 'POST', url: '/' };
       var route = new Route('');
 
-      route.get(function () {
+      route.get(function(req, res, next) {
         throw new Error('not me!');
       })
 
@@ -198,7 +198,7 @@ describe('Route', function(){
       var req = { order: '', method: 'GET', url: '/' };
       var route = new Route('');
 
-      route.all(function () {
+      route.all(function(req, res, next){
         throw new Error('foobar');
       });
 
@@ -224,7 +224,7 @@ describe('Route', function(){
       var req = { method: 'GET', url: '/' };
       var route = new Route('');
 
-      route.get(function () {
+      route.get(function(req, res, next){
         throw new Error('boom!');
       });
 

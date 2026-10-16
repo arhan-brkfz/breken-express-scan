@@ -2,7 +2,7 @@
 
 var express = require('../');
 var request = require('supertest');
-var assert = require('node:assert');
+var assert = require('assert');
 
 describe('HEAD', function(){
   it('should default to GET', function(done){

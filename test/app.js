@@ -1,6 +1,6 @@
 'use strict'
 
-var assert = require('node:assert')
+var assert = require('assert')
 var express = require('..')
 var request = require('supertest')
 
@@ -53,6 +53,18 @@ describe('app.mountpath', function(){
     assert.strictEqual(app.mountpath, '/')
     assert.strictEqual(blog.mountpath, '/blog')
     assert.strictEqual(fallback.mountpath, '/')
+  })
+})
+
+describe('app.router', function(){
+  it('should throw with notice', function(done){
+    var app = express()
+
+    try {
+      app.router;
+    } catch(err) {
+      done();
+    }
   })
 })
 

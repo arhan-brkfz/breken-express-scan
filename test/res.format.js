@@ -3,7 +3,7 @@
 var after = require('after')
 var express = require('../')
   , request = require('supertest')
-  , assert = require('node:assert');
+  , assert = require('assert');
 
 var app1 = express();
 
@@ -28,8 +28,7 @@ app1.use(function(req, res, next){
 
 app1.use(function(err, req, res, next){
   if (!err.types) throw err;
-  res.status(err.status)
-  res.send('Supports: ' + err.types.join(', '))
+  res.send(err.status, 'Supports: ' + err.types.join(', '));
 })
 
 var app2 = express();
@@ -43,8 +42,7 @@ app2.use(function(req, res, next){
 });
 
 app2.use(function(err, req, res, next){
-  res.status(err.status)
-  res.send('Supports: ' + err.types.join(', '))
+  res.send(err.status, 'Supports: ' + err.types.join(', '));
 })
 
 var app3 = express();
@@ -63,7 +61,7 @@ app3.use(function(req, res, next){
 
 var app4 = express();
 
-app4.get('/', function (req, res) {
+app4.get('/', function(req, res, next){
   res.format({
     text: function(){ res.send('hey') },
     html: function(){ res.send('<p>hey</p>') },
@@ -72,8 +70,7 @@ app4.get('/', function (req, res) {
 });
 
 app4.use(function(err, req, res, next){
-  res.status(err.status)
-  res.send('Supports: ' + err.types.join(', '))
+  res.send(err.status, 'Supports: ' + err.types.join(', '));
 })
 
 var app5 = express();
@@ -106,8 +103,7 @@ describe('res', function(){
       });
 
       app.use(function(err, req, res, next){
-        res.status(err.status)
-        res.send('Supports: ' + err.types.join(', '))
+        res.send(err.status, 'Supports: ' + err.types.join(', '));
       });
 
       test(app);
@@ -159,7 +155,7 @@ describe('res', function(){
       var app = express();
       var router = express.Router();
 
-      router.get('/', function (req, res) {
+      router.get('/', function(req, res, next){
         res.format({
           text: function(){ res.send('hey') },
           html: function(){ res.send('<p>hey</p>') },
@@ -168,8 +164,7 @@ describe('res', function(){
       });
 
       router.use(function(err, req, res, next){
-        res.status(err.status)
-        res.send('Supports: ' + err.types.join(', '))
+        res.send(err.status, 'Supports: ' + err.types.join(', '));
       })
 
       app.use(router)
@@ -237,7 +232,7 @@ function test(app) {
   })
 
   describe('when no match is made', function(){
-    it('should respond with 406 not acceptable', function(done){
+    it('should should respond with 406 not acceptable', function(done){
       request(app)
       .get('/')
       .set('Accept', 'foo/bar')

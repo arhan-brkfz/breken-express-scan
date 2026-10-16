@@ -1,6 +1,6 @@
 'use strict'
 
-var assert = require('node:assert')
+var assert = require('assert')
 var express = require('../');
 var request = require('supertest');
 
@@ -78,5 +78,10 @@ describe('exports', function(){
     request(app)
     .get('/')
     .expect('bar', done);
+  })
+
+  it('should throw on old middlewares', function(){
+    assert.throws(function () { express.bodyParser() }, /Error:.*middleware.*bodyParser/)
+    assert.throws(function () { express.limit() }, /Error:.*middleware.*limit/)
   })
 })

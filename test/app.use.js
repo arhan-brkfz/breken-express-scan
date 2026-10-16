@@ -1,7 +1,7 @@
 'use strict'
 
 var after = require('after');
-var assert = require('node:assert')
+var assert = require('assert')
 var express = require('..');
 var request = require('supertest');
 
@@ -57,7 +57,7 @@ describe('app', function(){
 
       request(app)
         .get('/forum')
-        .expect(200, 'forum', cb)
+        .expect(200, 'forum', done)
     })
 
     it('should set the child\'s .parent', function(){
@@ -258,27 +258,27 @@ describe('app', function(){
   describe('.use(path, middleware)', function(){
     it('should require middleware', function () {
       var app = express()
-      assert.throws(function () { app.use('/') }, 'TypeError: app.use() requires a middleware function')
+      assert.throws(function () { app.use('/') }, /requires a middleware function/)
     })
 
     it('should reject string as middleware', function () {
       var app = express()
-      assert.throws(function () { app.use('/', 'foo') }, /argument handler must be a function/)
+      assert.throws(function () { app.use('/', 'foo') }, /requires a middleware function but got a string/)
     })
 
     it('should reject number as middleware', function () {
       var app = express()
-      assert.throws(function () { app.use('/', 42) }, /argument handler must be a function/)
+      assert.throws(function () { app.use('/', 42) }, /requires a middleware function but got a number/)
     })
 
     it('should reject null as middleware', function () {
       var app = express()
-      assert.throws(function () { app.use('/', null) }, /argument handler must be a function/)
+      assert.throws(function () { app.use('/', null) }, /requires a middleware function but got a Null/)
     })
 
     it('should reject Date as middleware', function () {
       var app = express()
-      assert.throws(function () { app.use('/', new Date()) }, /argument handler must be a function/)
+      assert.throws(function () { app.use('/', new Date()) }, /requires a middleware function but got a Date/)
     })
 
     it('should strip path from req.url', function (done) {

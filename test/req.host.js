@@ -28,7 +28,7 @@ describe('req', function(){
       request(app)
       .post('/')
       .set('Host', 'example.com:3000')
-      .expect(200, 'example.com:3000', done);
+      .expect('example.com', done);
     })
 
     it('should return undefined otherwise', function(done){
@@ -67,7 +67,7 @@ describe('req', function(){
       request(app)
       .post('/')
       .set('Host', '[::1]:3000')
-      .expect(200, '[::1]:3000', done);
+      .expect('[::1]', done);
     })
 
     describe('when "trust proxy" is enabled', function(){

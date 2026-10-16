@@ -6,7 +6,7 @@
 
 var express = require('../..');
 var logger = require('morgan');
-var path = require('node:path');
+var path = require('path');
 var session = require('express-session');
 var methodOverride = require('method-override');
 

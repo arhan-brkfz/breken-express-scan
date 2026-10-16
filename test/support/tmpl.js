@@ -1,4 +1,4 @@
-var fs = require('node:fs');
+var fs = require('fs');
 
 var variableRegExp = /\$([0-9a-zA-Z\.]+)/g;
 

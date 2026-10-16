@@ -1,10 +1,14 @@
 'use strict'
 
-var assert = require('node:assert')
-var AsyncLocalStorage = require('node:async_hooks').AsyncLocalStorage
-const { Buffer } = require('node:buffer');
+var assert = require('assert')
+var asyncHooks = tryRequire('async_hooks')
+var Buffer = require('safe-buffer').Buffer
 var express = require('..')
 var request = require('supertest')
+
+var describeAsyncHooks = typeof asyncHooks.AsyncLocalStorage === 'function'
+  ? describe
+  : describe.skip
 
 describe('express.text()', function () {
   before(function () {
@@ -55,6 +59,32 @@ describe('express.text()', function () {
       .set('Transfer-Encoding', 'chunked')
       .send('')
       .expect(200, '""', done)
+  })
+
+  it('should 500 if stream not readable', function (done) {
+    var app = express()
+
+    app.use(function (req, res, next) {
+      req.on('end', next)
+      req.resume()
+    })
+
+    app.use(express.text())
+
+    app.use(function (err, req, res, next) {
+      res.status(err.status || 500)
+      res.send('[' + err.type + '] ' + err.message)
+    })
+
+    app.post('/', function (req, res) {
+      res.json(req.body)
+    })
+
+    request(app)
+      .post('/')
+      .set('Content-Type', 'text/plain')
+      .send('user is tobi')
+      .expect(500, '[stream.not.readable] stream is not readable', done)
   })
 
   it('should handle duplicated middleware', function (done) {
@@ -217,7 +247,7 @@ describe('express.text()', function () {
           .post('/')
           .set('Content-Type', 'text/plain')
           .send('user is tobi')
-          .expect(200, '', done)
+          .expect(200, '{}', done)
       })
     })
 
@@ -247,7 +277,7 @@ describe('express.text()', function () {
           .post('/')
           .set('Content-Type', 'text/xml')
           .send('<user>tobi</user>')
-          .expect(200, '', done)
+          .expect(200, '{}', done)
       })
     })
 
@@ -357,13 +387,13 @@ describe('express.text()', function () {
     })
   })
 
-  describe('async local storage', function () {
+  describeAsyncHooks('async local storage', function () {
     before(function () {
       var app = express()
       var store = { foo: 'bar' }
 
       app.use(function (req, res, next) {
-        req.asyncLocalStorage = new AsyncLocalStorage()
+        req.asyncLocalStorage = new asyncHooks.AsyncLocalStorage()
         req.asyncLocalStorage.run(store, next)
       })
 
@@ -397,7 +427,7 @@ describe('express.text()', function () {
       this.app = app
     })
 
-    it('should persist store', function (done) {
+    it('should presist store', function (done) {
       request(this.app)
         .post('/')
         .set('Content-Type', 'text/plain')
@@ -408,17 +438,18 @@ describe('express.text()', function () {
         .end(done)
     })
 
-    it('should persist store when unmatched content-type', function (done) {
+    it('should presist store when unmatched content-type', function (done) {
       request(this.app)
         .post('/')
         .set('Content-Type', 'application/fizzbuzz')
         .send('buzz')
         .expect(200)
         .expect('x-store-foo', 'bar')
+        .expect('{}')
         .end(done)
     })
 
-    it('should persist store when inflated', function (done) {
+    it('should presist store when inflated', function (done) {
       var test = request(this.app).post('/')
       test.set('Content-Encoding', 'gzip')
       test.set('Content-Type', 'text/plain')
@@ -429,7 +460,7 @@ describe('express.text()', function () {
       test.end(done)
     })
 
-    it('should persist store when inflate error', function (done) {
+    it('should presist store when inflate error', function (done) {
       var test = request(this.app).post('/')
       test.set('Content-Encoding', 'gzip')
       test.set('Content-Type', 'text/plain')
@@ -439,7 +470,7 @@ describe('express.text()', function () {
       test.end(done)
     })
 
-    it('should persist store when limit exceeded', function (done) {
+    it('should presist store when limit exceeded', function (done) {
       request(this.app)
         .post('/')
         .set('Content-Type', 'text/plain')
@@ -563,4 +594,12 @@ function createApp (options) {
   })
 
   return app
+}
+
+function tryRequire (name) {
+  try {
+    return require(name)
+  } catch (e) {
+    return {}
+  }
 }

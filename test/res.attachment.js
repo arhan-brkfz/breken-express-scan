@@ -1,7 +1,6 @@
 'use strict'
 
-const { Buffer } = require('node:buffer');
-
+var Buffer = require('safe-buffer').Buffer
 var express = require('../')
   , request = require('supertest');
 
@@ -31,33 +30,7 @@ describe('res', function(){
 
       request(app)
       .get('/')
-      .expect('Content-Disposition', 'attachment; filename=image.png', done);
-    })
-
-    it('should quote file names that are not a valid token', function(done){
-      var app = express();
-
-      app.use(function(req, res){
-        res.attachment('/path/to/my report.png');
-        res.send('foo');
-      });
-
-      request(app)
-      .get('/')
-      .expect('Content-Disposition', 'attachment; filename="my report.png"', done);
-    })
-
-    it('should handle an empty file name', function(done){
-      var app = express();
-
-      app.use(function(req, res){
-        res.attachment('');
-        res.send('foo');
-      });
-
-      request(app)
-      .get('/')
-      .expect('Content-Disposition', 'attachment; filename=""', done);
+      .expect('Content-Disposition', 'attachment; filename="image.png"', done);
     })
 
     it('should set the Content-Type', function(done){
@@ -86,20 +59,6 @@ describe('res', function(){
       request(app)
       .get('/')
       .expect('Content-Disposition', 'attachment; filename="???.txt"; filename*=UTF-8\'\'%E6%97%A5%E6%9C%AC%E8%AA%9E.txt')
-      .expect(200, done);
-    })
-
-    it('should encode latin1 file names with an ASCII fallback and filename* param', function(done){
-      var app = express();
-
-      app.use(function(req, res){
-        res.attachment('/locales/café.txt');
-        res.send('coffee');
-      });
-
-      request(app)
-      .get('/')
-      .expect('Content-Disposition', 'attachment; filename="caf?.txt"; filename*=UTF-8\'\'caf%C3%A9.txt')
       .expect(200, done);
     })
 

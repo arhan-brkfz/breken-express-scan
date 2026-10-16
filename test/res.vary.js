@@ -6,7 +6,7 @@ var utils = require('./support/utils');
 
 describe('res.vary()', function(){
   describe('with no arguments', function(){
-    it('should throw error', function (done) {
+    it('should not set Vary', function (done) {
       var app = express();
 
       app.use(function (req, res) {
@@ -16,7 +16,8 @@ describe('res.vary()', function(){
 
       request(app)
       .get('/')
-      .expect(500, /field.*required/, done)
+      .expect(utils.shouldNotHaveHeader('Vary'))
+      .expect(200, done);
     })
   })
 

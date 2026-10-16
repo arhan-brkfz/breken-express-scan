@@ -39,7 +39,7 @@ describe('req', function(){
         app.enable('trust proxy');
 
         app.use(function(req, res){
-          req.socket.encrypted = true;
+          req.connection.encrypted = true;
           res.end(req.protocol);
         });
 
